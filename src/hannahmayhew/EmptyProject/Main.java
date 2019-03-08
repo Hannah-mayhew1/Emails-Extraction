@@ -2,6 +2,7 @@ package hannahmayhew.EmptyProject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,22 +16,7 @@ public class Main {
 
         List<String> splitWords = splitStringFile(file);
 
-        System.out.println(searchForSoftwireEmail(splitWords));
-    }
-
-    public static int searchForSoftwireEmail (List<String> splitWords) {
-
-        int noOfEmails = 0;
-
-        Pattern pattern = Pattern.compile("@softwire\\.com$");
-
-        for (int words = 0; words < splitWords.size() ; words++) {
-            Matcher matcher = pattern.matcher(splitWords.get(words));
-            if (matcher.find()) {
-                noOfEmails++;
-            }
-        }
-        return noOfEmails;
+        System.out.println(getEmailAddresses(splitWords));
     }
 
     public static List<String> splitStringFile(String file) {
@@ -44,5 +30,28 @@ public class Main {
         return splitWords;
     }
 
+    private static Map<String, Integer> getEmailAddresses (List<String> splitWords) {
+
+        Pattern pattern = Pattern.compile(".+@(.+\\..+)");
+
+        Map<String, Integer> listOfDomains = new HashMap<>();
+
+        for (int address = 0; address < splitWords.size(); address++) {
+
+            Matcher matcher = pattern.matcher(splitWords.get(address));
+
+            if (matcher.find()) {
+                String domain = matcher.group(1);
+                if (listOfDomains.containsKey(domain)) {
+                    listOfDomains.put(domain, listOfDomains.get(domain) + 1);
+                }
+                else {
+                    listOfDomains.put(domain, 1);
+                }
+            }
+        }
+
+        return listOfDomains;
+    }
 
 }
