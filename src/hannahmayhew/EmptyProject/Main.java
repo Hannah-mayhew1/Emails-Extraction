@@ -1,12 +1,11 @@
 package hannahmayhew.EmptyProject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -17,9 +16,11 @@ public class Main {
         List<String> splitWords = splitStringFile(file);
 
         System.out.println(getEmailAddresses(splitWords));
+
+        getTenMostFrequentDomains(getEmailAddresses(splitWords));
     }
 
-    public static List<String> splitStringFile(String file) {
+    private static List<String> splitStringFile(String file) {
         List<String> splitWords = new ArrayList<>();
         String[] split = file.split("\\s+");
 
@@ -52,6 +53,20 @@ public class Main {
         }
 
         return listOfDomains;
+    }
+
+    private static void getTenMostFrequentDomains(Map<String, Integer> listOfDomains) {
+        Map<String, Integer> sortedMap = listOfDomains
+                .entrySet().stream()
+                .sorted(Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(10)
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        System.out.println("The top ten domains include:");
+
+        for (String domain : sortedMap.keySet()) {
+            System.out.println(domain + " : " + sortedMap.get(domain));
+        }
     }
 
 }
